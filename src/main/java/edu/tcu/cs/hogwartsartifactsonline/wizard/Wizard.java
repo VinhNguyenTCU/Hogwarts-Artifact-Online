@@ -1,10 +1,7 @@
 package edu.tcu.cs.hogwartsartifactsonline.wizard;
 
 import edu.tcu.cs.hogwartsartifactsonline.artifact.Artifact;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,6 +11,7 @@ import java.util.List;
 public class Wizard implements Serializable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     private String name;
@@ -21,35 +19,51 @@ public class Wizard implements Serializable {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "owner")
     private List<Artifact> artifacts = new ArrayList<>();
 
+
     public Wizard() {
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setArtifacts(List<Artifact> artifacts) {
-        this.artifacts = artifacts;
     }
 
     public Integer getId() {
         return id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<Artifact> getArtifacts() {
         return artifacts;
     }
 
+    public void setArtifacts(List<Artifact> artifacts) {
+        this.artifacts = artifacts;
+    }
+
     public void addArtifact(Artifact artifact) {
         artifact.setOwner(this);
         this.artifacts.add(artifact);
+    }
+
+    public Integer getNumberOfArtifacts() {
+        return this.artifacts.size();
+    }
+
+    public void removeAllArtifacts() {
+        this.artifacts.stream().forEach(artifact -> artifact.setOwner(null));
+        this.artifacts = null;
+    }
+
+    public void removeArtifact(Artifact artifactToBeAssigned) {
+        // Remove artifact owner.
+        artifactToBeAssigned.setOwner(null);
+        this.artifacts.remove(artifactToBeAssigned);
     }
 }
